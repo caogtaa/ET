@@ -50,6 +50,8 @@ namespace ET
                     }
 
                     ResponseTypeAttribute responseTypeAttribute = attrs[0] as ResponseTypeAttribute;
+                    
+                    // TODO: GT: 为啥这里要用字符串去匹配？出现GC了，并且无法反射。标注里用的是ResponseType(nameof(XXXXMessage))
                     this.requestResponse.Add(type, CodeTypes.Instance.GetType($"ET.{responseTypeAttribute.Type}"));
                 }
             }

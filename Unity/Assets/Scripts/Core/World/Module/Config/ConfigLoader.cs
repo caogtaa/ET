@@ -33,6 +33,7 @@ namespace ET
 
         public async ETTask LoadAsync()
         {
+            // 异步读取所有[Config]标注的类对应的文件流
             Dictionary<Type, byte[]> configBytes = await EventSystem.Instance.Invoke<GetAllConfigBytes, ETTask<Dictionary<Type, byte[]>>>(new GetAllConfigBytes());
 
 #if DOTNET || UNITY_STANDALONE
@@ -53,7 +54,13 @@ namespace ET
             }
 #endif
         }
-
+        
+        /// <summary>
+        /// 从字节流中反序列化特定类型的配置，并且设为全局单例
+        /// GT: 这里可以看出[Config]标注必须作为Singleton存在
+        /// </summary>
+        /// <param name="configType"></param>
+        /// <param name="oneConfigBytes"></param>
         private static void LoadOneConfig(Type configType, byte[] oneConfigBytes)
         {
             object category = MongoHelper.Deserialize(configType, oneConfigBytes, 0, oneConfigBytes.Length);

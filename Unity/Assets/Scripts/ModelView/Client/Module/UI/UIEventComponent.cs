@@ -11,6 +11,10 @@ namespace ET.Client
 	{
 		public Dictionary<string, AUIEvent> UIEvents { get; } = new();
 		
+		/// <summary>
+		/// 实例化所有[UIEvent]标注的类型，保存到UIEvents
+		/// attr.UIType是string类型，自定义的字符串。在Demo里这个字符串直接耦合了本地的prefab名
+		/// </summary>
         public void Awake()
         {
             var uiEvents = CodeTypes.Instance.GetTypes(typeof (UIEventAttribute));

@@ -23,7 +23,10 @@ namespace ET
     public class MessageDispatcher: Singleton<MessageDispatcher>, ISingletonAwake
     {
         private readonly Dictionary<Type, List<MessageDispatcherInfo>> messageHandlers = new();
-
+        
+        /// <summary>
+        /// GT: MessageHanlder即作为基类，又作为标注，简直乱得一批
+        /// </summary>
         public void Awake()
         {
             HashSet<Type> types = CodeTypes.Instance.GetTypes(typeof (MessageHandlerAttribute));
@@ -41,6 +44,11 @@ namespace ET
             }
         }
         
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="type">hanlder type</param>
+        /// <exception cref="Exception"></exception>
         private void Register(Type type)
         {
             object obj = Activator.CreateInstance(type);
@@ -75,6 +83,11 @@ namespace ET
             }
         }
         
+        /// <summary>
+        /// 保存requestType -> 
+        /// </summary>
+        /// <param name="type">requestType / messageType</param>
+        /// <param name="handler">(SceneType, handlerObj)</param>
         private void RegisterHandler(Type type, MessageDispatcherInfo handler)
         {
             if (!this.messageHandlers.ContainsKey(type))

@@ -14,7 +14,7 @@ namespace ET
             
             public readonly UnOrderMultiMap<Type, SystemObject> Map = new();
             // 这里不用hash，数量比较少，直接for循环速度更快
-            public readonly bool[] QueueFlag;
+            public readonly bool[] QueueFlag;   // TODO: 研究一下
         }
 
         private readonly int count;

@@ -152,6 +152,7 @@ namespace ET
                 return response;
             }
             
+            // GT: 每次请求这里都会产生闭包GC
             async ETTask Timeout()
             {
                 await fiber.Root.GetComponent<TimerComponent>().WaitAsync(ProcessInnerSender.TIMEOUT_TIME);

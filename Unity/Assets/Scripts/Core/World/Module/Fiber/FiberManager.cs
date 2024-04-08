@@ -27,6 +27,7 @@ namespace ET
             this.mainThreadScheduler = new MainThreadScheduler(this);
             this.schedulers[(int)SchedulerType.Main] = this.mainThreadScheduler;
             
+            // GT: 编辑器带UI模式下，thread/threadpool模式都合并到主线程
 #if ENABLE_VIEW && UNITY_EDITOR
             this.schedulers[(int)SchedulerType.Thread] = this.mainThreadScheduler;
             this.schedulers[(int)SchedulerType.ThreadPool] = this.mainThreadScheduler;
@@ -36,11 +37,17 @@ namespace ET
 #endif
         }
         
+        /// <summary>
+        /// 入口脚本Init::Update()驱动
+        /// </summary>
         public void Update()
         {
             this.mainThreadScheduler.Update();
         }
 
+        /// <summary>
+        /// 入口脚本Init::LateUpdate()驱动
+        /// </summary>
         public void LateUpdate()
         {
             this.mainThreadScheduler.LateUpdate();
@@ -60,7 +67,18 @@ namespace ET
 
             this.fibers = null;
         }
-
+        
+        /// <summary>
+        /// 主线程调用方式:
+        ///     await FiberManager.Instance.Create(SchedulerType.Main, ConstFiberId.Main, 0, SceneType.Main, "");
+        /// </summary>
+        /// <param name="schedulerType">Main/Thread/ThreadPool，决定了方法执行所在的线程</param>
+        /// <param name="fiberId"></param>
+        /// <param name="zone"></param>
+        /// <param name="sceneType"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public async ETTask<int> Create(SchedulerType schedulerType, int fiberId, int zone, SceneType sceneType, string name)
         {
             try
@@ -74,7 +92,8 @@ namespace ET
                 this.schedulers[(int) schedulerType].Add(fiberId);
                 
                 TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
-
+                
+                // Post会入队列，内容下一次Update才会执行
                 fiber.ThreadSynchronizationContext.Post(async () =>
                 {
                     try

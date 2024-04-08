@@ -90,7 +90,8 @@ namespace ET
             }
             
             (Assembly hotfixAssembly, Assembly hotfixViewAssembly) = this.LoadHotfix();
-
+            
+            // 扫描所有assembly里面的ET框架的标注并分类保存 
             World.Instance.AddSingleton<CodeTypes, Assembly[]>(new[]
             {
                 typeof (World).Assembly, typeof (Init).Assembly, this.modelAssembly, this.modelViewAssembly, hotfixAssembly,

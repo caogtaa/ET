@@ -2,6 +2,9 @@
 
 namespace ET
 {
+    /// <summary>
+    /// GT: TODO: 加入GameFramework的条件编译
+    /// </summary>
     public class UnityLogger: ILog
     {
         public void Trace(string msg)

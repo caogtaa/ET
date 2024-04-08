@@ -14,10 +14,16 @@ namespace ET
 
             foreach (Type type in CodeTypes.Instance.GetTypes(typeof (EntitySystemAttribute)))
             {
+                // TODO: GT: 两种情况下这里会产生无效GC
+                // 1. [EntitySystem]应用于Method时。GetTypes可能不会返回Method类型，这条忽略
+                // 2. 没有命中obj is ISystemType。当类继承了SystemObject，但是没有实现ISystemType接口或其派生接口时会出现
+                // 如果是codegen的胶水类，不会出现上述问题
                 SystemObject obj = (SystemObject)Activator.CreateInstance(type);
 
                 if (obj is ISystemType iSystemType)
                 {
+                    // GT: 按照systemType -> system obj存储
+                    // 实际上obj是一个空壳类，是胶水类。不做成static的原因仅仅是为了运行时dispatch
                     TypeSystems.OneTypeSystems oneTypeSystems = this.TypeSystems.GetOrCreateOneTypeSystems(iSystemType.Type());
                     oneTypeSystems.Map.Add(iSystemType.SystemType(), obj);
                     int index = iSystemType.GetInstanceQueueIndex();
@@ -118,6 +124,10 @@ namespace ET
             }
         }
         
+        /// <summary>
+        /// 主动调用entity的AwakeSystem
+        /// </summary>
+        /// <param name="component"></param>
         public void Awake(Entity component)
         {
             List<SystemObject> iAwakeSystems = this.TypeSystems.GetSystems(component.GetType(), typeof (IAwakeSystem));
@@ -135,6 +145,7 @@ namespace ET
 
                 try
                 {
+                    // IAwakeSystem::Run()会间接调用AwakeSystem胶水类的Awake
                     aAwakeSystem.Run(component);
                 }
                 catch (Exception e)

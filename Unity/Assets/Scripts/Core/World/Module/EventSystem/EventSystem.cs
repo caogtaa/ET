@@ -19,10 +19,21 @@ namespace ET
             }
         }
         
+        // 实例化后的所有[Event]标注的类
+        // 映射 EventType -> EventInfo(obj, SceneType)
         private readonly Dictionary<Type, List<EventInfo>> allEvents = new();
         
+        // 实例化后的所有[Invoke]标注的类
+        // 映射 InvokableType -> Dictionary<attr.Type, obj>
         private readonly Dictionary<Type, Dictionary<long, object>> allInvokers = new(); 
         
+        /// <summary>
+        /// 1. 实例化所有[Event]标注的类，记录到allEvents
+        /// 映射 EventType -> EventInfo(obj, SceneType)
+        /// 2. 实例化所有[Invoke]标注的类，记录到allInvokers
+        /// 映射 InvokableType -> Dictionary<attr.Type, obj>
+        /// </summary>
+        /// <exception cref="Exception"></exception>
         public void Awake()
         {
             CodeTypes codeTypes = CodeTypes.Instance;
@@ -34,11 +45,15 @@ namespace ET
                     throw new Exception($"type not is AEvent: {type.Name}");
                 }
                 
+                // GT: 再取一次CustomAttributes，这里主要是为了获得标注里的数据SceneType
+                // TODO: 按1000个event来算，对启动时间影响多少需要测试一下。
                 object[] attrs = type.GetCustomAttributes(typeof(EventAttribute), false);
                 foreach (object attr in attrs)
                 {
                     EventAttribute eventAttribute = attr as EventAttribute;
-
+                    
+                    // GT: 这里的obj.Type实际是AEvent<Scene, XX>里的第二个模板参数
+                    // 这意味着[Event]标注的类，必须继承AEvent
                     Type eventType = obj.Type;
 
                     EventInfo eventInfo = new(obj, eventAttribute.SceneType);
@@ -50,7 +65,8 @@ namespace ET
                     this.allEvents[eventType].Add(eventInfo);
                 }
             }
-
+            
+            // GT: [Invoke]标注的类必须继承AInvokeHandler
             foreach (Type type in codeTypes.GetTypes(typeof (InvokeAttribute)))
             {
                 object obj = Activator.CreateInstance(type);
@@ -83,6 +99,13 @@ namespace ET
             }
         }
         
+        /// <summary>
+        /// 发布消息
+        /// </summary>
+        /// <param name="scene">场景，只有对应场景的handler会收到消息</param>
+        /// <param name="a">消息对象</param>
+        /// <typeparam name="S"></typeparam>
+        /// <typeparam name="T">消息对象的类</typeparam>
         public async ETTask PublishAsync<S, T>(S scene, T a) where S: class, IScene where T : struct
         {
             List<EventInfo> iEvents;

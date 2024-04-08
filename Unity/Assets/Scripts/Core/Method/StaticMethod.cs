@@ -2,6 +2,12 @@ using System.Reflection;
 
 namespace ET
 {
+    /// <summary>
+    /// 简单封装了一下反射方式使用方法
+    /// 最多支持3个参数的方法调用
+    /// 注意：这里要手动指定正确的assembly，没有在domain里搜索
+    /// 注意：typeName要求带namespace，需要是FQN？
+    /// </summary>
     public class StaticMethod : IStaticMethod
     {
         private readonly MethodInfo methodInfo;
