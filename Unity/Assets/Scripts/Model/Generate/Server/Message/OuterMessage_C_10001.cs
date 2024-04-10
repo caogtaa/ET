@@ -741,6 +741,77 @@ namespace ET
     }
 
     [MemoryPackable]
+    [Message(OuterMessage.C2R_LoginAccount)]
+    [ResponseType(nameof(R2C_LoginAccount))]
+    public partial class C2R_LoginAccount : MessageObject, ISessionRequest
+    {
+        public static C2R_LoginAccount Create(bool isFromPool = false)
+        {
+            return ObjectPool.Instance.Fetch(typeof(C2R_LoginAccount), isFromPool) as C2R_LoginAccount;
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+
+        [MemoryPackOrder(1)]
+        public string AccountName { get; set; }
+
+        [MemoryPackOrder(2)]
+        public string Password { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.AccountName = default;
+            this.Password = default;
+
+            ObjectPool.Instance.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(OuterMessage.R2C_LoginAccount)]
+    public partial class R2C_LoginAccount : MessageObject, ISessionResponse
+    {
+        public static R2C_LoginAccount Create(bool isFromPool = false)
+        {
+            return ObjectPool.Instance.Fetch(typeof(R2C_LoginAccount), isFromPool) as R2C_LoginAccount;
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+
+        [MemoryPackOrder(1)]
+        public int Error { get; set; }
+
+        [MemoryPackOrder(2)]
+        public string Message { get; set; }
+
+        [MemoryPackOrder(3)]
+        public string Token { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.Error = default;
+            this.Message = default;
+            this.Token = default;
+
+            ObjectPool.Instance.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
     [Message(OuterMessage.C2G_LoginGate)]
     [ResponseType(nameof(G2C_LoginGate))]
     public partial class C2G_LoginGate : MessageObject, ISessionRequest
@@ -1107,16 +1178,18 @@ namespace ET
         public const ushort M2C_Reload = 10022;
         public const ushort C2R_Login = 10023;
         public const ushort R2C_Login = 10024;
-        public const ushort C2G_LoginGate = 10025;
-        public const ushort G2C_LoginGate = 10026;
-        public const ushort G2C_TestHotfixMessage = 10027;
-        public const ushort C2M_TestRobotCase = 10028;
-        public const ushort M2C_TestRobotCase = 10029;
-        public const ushort C2M_TestRobotCase2 = 10030;
-        public const ushort M2C_TestRobotCase2 = 10031;
-        public const ushort C2M_TransferMap = 10032;
-        public const ushort M2C_TransferMap = 10033;
-        public const ushort C2G_Benchmark = 10034;
-        public const ushort G2C_Benchmark = 10035;
+        public const ushort C2R_LoginAccount = 10025;
+        public const ushort R2C_LoginAccount = 10026;
+        public const ushort C2G_LoginGate = 10027;
+        public const ushort G2C_LoginGate = 10028;
+        public const ushort G2C_TestHotfixMessage = 10029;
+        public const ushort C2M_TestRobotCase = 10030;
+        public const ushort M2C_TestRobotCase = 10031;
+        public const ushort C2M_TestRobotCase2 = 10032;
+        public const ushort M2C_TestRobotCase2 = 10033;
+        public const ushort C2M_TransferMap = 10034;
+        public const ushort M2C_TransferMap = 10035;
+        public const ushort C2G_Benchmark = 10036;
+        public const ushort G2C_Benchmark = 10037;
     }
 }
