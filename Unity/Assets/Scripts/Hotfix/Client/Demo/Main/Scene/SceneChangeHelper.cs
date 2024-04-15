@@ -13,7 +13,12 @@
             UnitComponent unitComponent = currentScene.AddComponent<UnitComponent>();
          
             // 可以订阅这个事件中创建Loading界面
+            // GT: 这里实际上没有等待，内部coroutine了。如果要等待要用await PublishAsync
+            // 所以目前的设计里，如果场景较大加载慢的时候，可能会业务会提前跑起来
+            // GT: 加载场景和创建UI、实例化Unit并不冲突，因为UI和Unit都挂载在Global的组件下
             EventSystem.Instance.Publish(root, new SceneChangeStart());
+            // await EventSystem.Instance.PublishAsync(root, new SceneChangeStart());
+            
             // 等待CreateMyUnit的消息
             Wait_CreateMyUnit waitCreateMyUnit = await root.GetComponent<ObjectWait>().Wait<Wait_CreateMyUnit>();
             M2C_CreateMyUnit m2CCreateMyUnit = waitCreateMyUnit.Message;

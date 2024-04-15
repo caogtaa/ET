@@ -127,6 +127,7 @@ namespace ET
                 bool needException = true
         )
         {
+            // GT: rpcId每次请求都会自增1，用来区分不同请求
             int rpcId = self.GetRpcId();
             request.RpcId = rpcId;
             

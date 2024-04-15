@@ -6,7 +6,7 @@ using UnityEngine;
 namespace ET
 {
     [Invoke]
-    public class GetAllConfigBytes: AInvokeHandler<ConfigLoader.GetAllConfigBytes, ETTask<Dictionary<Type, byte[]>>>
+    public class GetAllConfigBytes: AInvokeHandler<ConfigLoader.GetAllConfigBytesTrait, ETTask<Dictionary<Type, byte[]>>>
     {
         /// <summary>
         /// 获取所有[Config]标注的类型
@@ -15,7 +15,7 @@ namespace ET
         /// <param name="args"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
-        public override async ETTask<Dictionary<Type, byte[]>> Handle(ConfigLoader.GetAllConfigBytes args)
+        public override async ETTask<Dictionary<Type, byte[]>> Handle(ConfigLoader.GetAllConfigBytesTrait args)
         {
             Dictionary<Type, byte[]> output = new Dictionary<Type, byte[]>();
             HashSet<Type> configTypes = CodeTypes.Instance.GetTypes(typeof (ConfigAttribute));
@@ -76,9 +76,9 @@ namespace ET
     }
     
     [Invoke]
-    public class GetOneConfigBytes: AInvokeHandler<ConfigLoader.GetOneConfigBytes, ETTask<byte[]>>
+    public class GetOneConfigBytes: AInvokeHandler<ConfigLoader.GetOneConfigBytesTrait, ETTask<byte[]>>
     {
-        public override async ETTask<byte[]> Handle(ConfigLoader.GetOneConfigBytes args)
+        public override async ETTask<byte[]> Handle(ConfigLoader.GetOneConfigBytesTrait args)
         {
             string ct = "cs";
             GlobalConfig globalConfig = Resources.Load<GlobalConfig>("GlobalConfig");

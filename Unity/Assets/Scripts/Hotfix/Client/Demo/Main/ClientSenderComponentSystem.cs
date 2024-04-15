@@ -35,10 +35,21 @@ namespace ET.Client
             await self.RemoveFiberAsync();
             self.Dispose();
         }
-
-        public static async ETTask<long> LoginAsync(this ClientSenderComponent self, string account, string password)
+        
+        /// <summary>
+        /// TODO: GT: 这里没有处理登录失败的场景
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="account"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        public static async ETTask<NetClient2Main_Login> LoginAsync(this ClientSenderComponent self, string account, string password)
         {
+            // 这里的fiberId是NetClient的
             self.fiberId = await FiberManager.Instance.Create(SchedulerType.ThreadPool, 0, SceneType.NetClient, "");
+            
+            // 这里的self.Fiber()返回的是Main Fiber
+            // Main和NetClient在客户端属于同一个进程
             self.netClientActorId = new ActorId(self.Fiber().Process, self.fiberId);
 
             Main2NetClient_Login main2NetClientLogin = Main2NetClient_Login.Create();
@@ -46,7 +57,7 @@ namespace ET.Client
             main2NetClientLogin.Account = account;
             main2NetClientLogin.Password = password;
             NetClient2Main_Login response = await self.Root().GetComponent<ProcessInnerSender>().Call(self.netClientActorId, main2NetClientLogin) as NetClient2Main_Login;
-            return response.PlayerId;
+            return response;
         }
 
         public static void Send(this ClientSenderComponent self, IMessage message)

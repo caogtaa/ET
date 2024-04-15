@@ -11,9 +11,15 @@ namespace ET.Client
             
             // LoginAsync里才开始创建ThreadPool的Fiber
             // TODO: GT: 如果登录失败，Fiber会残留在内部，下次重走登录流程会抛异常。应当清理Fiber或者复用旧的
-            long playerId = await clientSenderComponent.LoginAsync(account, password);
-
-            root.GetComponent<PlayerComponent>().MyId = playerId;
+            var loginRsp = await clientSenderComponent.LoginAsync(account, password);
+            if (loginRsp.Error != ErrorCode.ERR_Success) {
+                Log.Error($"登录失败: {loginRsp.Error}");
+                // TODO: 发布一个事件给UI层
+                return;
+            }
+            
+            // TODO: handle loginRsp.Token
+            root.GetComponent<PlayerComponent>().MyId = loginRsp.PlayerId;
             
             await EventSystem.Instance.PublishAsync(root, new LoginFinish());
         }

@@ -11,11 +11,11 @@ namespace ET
     /// </summary>
     public class ConfigLoader : Singleton<ConfigLoader>, ISingletonAwake
     {
-        public struct GetAllConfigBytes
+        public struct GetAllConfigBytesTrait
         {
         }
 
-        public struct GetOneConfigBytes
+        public struct GetOneConfigBytesTrait
         {
             public string ConfigName;
         }
@@ -26,15 +26,15 @@ namespace ET
 
         public async ETTask Reload(Type configType)
         {
-            GetOneConfigBytes getOneConfigBytes = new() { ConfigName = configType.Name };
-            byte[] oneConfigBytes = await EventSystem.Instance.Invoke<GetOneConfigBytes, ETTask<byte[]>>(getOneConfigBytes);
+            GetOneConfigBytesTrait getOneConfigBytesTrait = new() { ConfigName = configType.Name };
+            byte[] oneConfigBytes = await EventSystem.Instance.Invoke<GetOneConfigBytesTrait, ETTask<byte[]>>(getOneConfigBytesTrait);
             LoadOneConfig(configType, oneConfigBytes);
         }
 
         public async ETTask LoadAsync()
         {
             // 异步读取所有[Config]标注的类对应的文件流
-            Dictionary<Type, byte[]> configBytes = await EventSystem.Instance.Invoke<GetAllConfigBytes, ETTask<Dictionary<Type, byte[]>>>(new GetAllConfigBytes());
+            Dictionary<Type, byte[]> configBytes = await EventSystem.Instance.Invoke<GetAllConfigBytesTrait, ETTask<Dictionary<Type, byte[]>>>(new GetAllConfigBytesTrait());
 
 #if DOTNET || UNITY_STANDALONE
             using ListComponent<Task> listTasks = ListComponent<Task>.Create();

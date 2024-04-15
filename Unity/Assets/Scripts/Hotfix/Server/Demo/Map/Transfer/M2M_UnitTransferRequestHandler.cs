@@ -13,7 +13,9 @@ namespace ET.Server
 
             unitComponent.AddChild(unit);
             unitComponent.Add(unit);
-
+            
+            // 这里把unit的component层级结构还原
+            // 只有实现了ITransfer的组件会记录到Entitys，目前只有NumericComponent
             foreach (byte[] bytes in request.Entitys)
             {
                 Entity entity = MongoHelper.Deserialize<Entity>(bytes);

@@ -39,8 +39,10 @@ namespace ET.Client
         }
         
         // 等10分钟再获取一次
+        // GT: 这么做的意义是什么?
         public static async ETTask WaitTenMinGetAllRouter(this RouterAddressComponent self)
         {
+            // 延时一下都要单独起个组件，麻烦得一批
             await self.Root().GetComponent<TimerComponent>().WaitAsync(5 * 60 * 1000);
             if (self.IsDisposed)
             {

@@ -25,6 +25,7 @@ namespace ET
         
         // 实例化后的所有[Invoke]标注的类
         // 映射 InvokableType -> Dictionary<attr.Type, obj>
+        // attr.Type不填写时默认为0
         private readonly Dictionary<Type, Dictionary<long, object>> allInvokers = new(); 
         
         /// <summary>
@@ -54,6 +55,7 @@ namespace ET
                     
                     // GT: 这里的obj.Type实际是AEvent<Scene, XX>里的第二个模板参数
                     // 这意味着[Event]标注的类，必须继承AEvent
+                    // 这里使用了编程技巧免去从模板类型中获取类型，而是通过运行时来返回。AEvent起到了胶水作用
                     Type eventType = obj.Type;
 
                     EventInfo eventInfo = new(obj, eventAttribute.SceneType);

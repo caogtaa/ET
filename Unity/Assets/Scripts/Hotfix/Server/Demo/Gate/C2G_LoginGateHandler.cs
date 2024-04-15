@@ -9,6 +9,8 @@ namespace ET.Server
         protected override async ETTask Run(Session session, C2G_LoginGate request, G2C_LoginGate response)
         {
             Scene root = session.Root();
+            
+            // request.Key是通过C2R_Login返回的，此次C2G请求要进行校验
             string account = root.GetComponent<GateSessionKeyComponent>().Get(request.Key);
             if (account == null)
             {
@@ -26,9 +28,15 @@ namespace ET.Server
                 player = playerComponent.AddChild<Player, string>(account);
                 playerComponent.Add(player);
                 PlayerSessionComponent playerSessionComponent = player.AddComponent<PlayerSessionComponent>();
+                
+                // 添加MailBoxComponent后获得接收其他fiber消息的能力
                 playerSessionComponent.AddComponent<MailBoxComponent, MailBoxType>(MailBoxType.GateSession);
+                
+                // 通知location服务器记录自己的位置
                 await playerSessionComponent.AddLocation(LocationType.GateSession);
-			
+                
+                // Player和PlayerSessionComponent同时拥有接收消息的能力？分开记录location？这样的意图是啥？
+                // 他们能处理的消息类型不一样，一个是GateSession，一个是UnOrderedMessage
                 player.AddComponent<MailBoxComponent, MailBoxType>(MailBoxType.UnOrderedMessage);
                 await player.AddLocation(LocationType.Player);
 			
